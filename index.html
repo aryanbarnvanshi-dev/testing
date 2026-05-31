@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>R. K. Mission Public School — Home</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="assets/logo.png" />
+  <meta name="description" content="R. K. Mission Public School — village school in Madansath. Clear information on admissions, programs and contact." />
+</head>
+<body class="theme-light">
+  <!-- टॉप लाइव नोटिस बोर्ड (डेटा सीधे Latest_Notices टैब से आएगा) -->
+  <div class="notice-board" aria-hidden="false">
+    <div class="container notice-inner">
+      <strong class="notice-label" data-en="Latest Announcements:" data-hi="नवीनतम घोषणाएँ:">Latest Announcements:</strong>
+      <div class="notice-scroll" id="notice-scroll" aria-live="polite">
+        <div class="notice-track">
+          <!-- जावास्क्रिप्ट लोड होते ही यहाँ लाइव नोटिस अपने आप आ जाएंगे -->
+          <span data-en="Loading updates..." data-hi="अपडेट लोड हो रहे हैं...">Loading updates...</span>
+        </div>
+      </div>
+
+      <div class="lang-toggle">
+        <button id="lang-btn" class="btn small" aria-pressed="false">हिंदी</button>
+      </div>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html">
+        <img src="assets/logo.png" alt="School logo" class="logo" />
+        <span class="brand-name" data-en="R. K. Mission Public School" data-hi="आर. के. मिशन पब्लिक स्कूल">R. K. Mission Public School</span>
+      </a>
+
+      <button id="nav-toggle" class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav id="main-nav" class="nav" aria-label="Main navigation">
+        <a href="index.html" class="nav-link active" data-en="Home" data-hi="होम">Home</a>
+        <a href="about.html" class="nav-link" data-en="About" data-hi="हमारे बारे में">About</a>
+        <a href="school-info.html" class="nav-link" data-en="Academics" data-hi="शिक्षा / अकादमिक">Academics</a>
+        <a href="gallery.html" class="nav-link" data-en="Gallery" data-hi="गैलरी">Gallery</a>
+        <a href="contact.html" class="nav-link" data-en="Contact" data-hi="संपर्क">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- लाइव हीरो सेक्शन (डेटा सीधे Homepage_Hero टैब से आएगा) -->
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <h1>R. K. Mission Public School</h1>
+          <p class="lead">Welcoming you to a bright future of learning and character development.</p>
+          <p class="cta-row">
+            <a class="btn primary" href="school-info.html" data-en="Our Programs" data-hi="हमारे पाठ्यक्रम">Our Programs</a>
+            <a class="btn ghost" href="contact.html" data-en="Contact Admissions" data-hi="प्रवेश के लिए संपर्क करें">Contact Admissions</a>
+          </p>
+        </div>
+        <div class="hero-card">
+          <img src="assets/logo.png" alt="School Building or Logo" />
+        </div>
+      </div>
+    </section>
+
+    <!-- स्कूल की मुख्य विशेषताएं (स्थिर अनुभाग) -->
+    <section class="container features">
+      <h2 class="section-title" data-en="What we offer" data-hi="हम क्या प्रदान करते हैं">What we offer</h2>
+      <div class="cards">
+        <article class="card">
+          <h3 data-en="Strong Academics" data-hi="मजबूत शिक्षा">Strong Academics</h3>
+          <p data-en="Engaging curriculum, experienced teachers and measurable outcomes." data-hi="दिलचस्प पाठ्यक्रम, अनुभवी शिक्षक और परिणामोन्मुखी शिक्षा।">Engaging curriculum, experienced teachers and measurable outcomes.</p>
+        </article>
+        <article class="card">
+          <h3 data-en="Clubs & Sports" data-hi="क्लब और खेल">Clubs & Sports</h3>
+          <p data-en="Vibrant extracurriculars to build teamwork and leadership." data-hi="टीमवर्क और नेतृत्व कौशल बढ़ाने के लिए जीवंत पाठ्येतर गतिविधियाँ।">Vibrant extracurriculars to build teamwork and leadership.</p>
+        </article>
+        <article class="card">
+          <h3 data-en="Safe Community" data-hi="सुरक्षित माहौल">Safe Community</h3>
+          <p data-en="A supportive environment where students thrive socially and emotionally." data-hi="एक सहायक वातावरण जहाँ छात्र सामाजिक और भावनात्मक रूप से आगे बढ़ते हैं।">A supportive environment where students thrive socially and emotionally.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- लाइव आगामी कार्यक्रम (डेटा सीधे Upcoming_Events टैब से आएगा) -->
+    <section class="container upcoming">
+      <div class="split">
+        <div>
+          <h2 class="section-title" data-en="Upcoming events" data-hi="आगामी कार्यक्रम">Upcoming events</h2>
+          <ul class="events">
+            <!-- जावास्क्रिप्ट लोड होते ही यहाँ लाइव कार्यक्रम अपने आप आ जाएंगे -->
+            <li data-en="Loading events..." data-hi="कार्यक्रम लोड हो रहे हैं...">Loading events...</li>
+          </ul>
+          <a class="btn" href="contact.html" data-en="Request Brochure" data-hi="विवरणিকা (Brochure) मांगें">Request Brochure</a>
+        </div>
+        <aside class="contact-card">
+          <h3 data-en="Contact Admissions" data-hi="प्रवेश कार्यालय से संपर्क करें">Contact Admissions</h3>
+          <p data-en="Email: sr376758@gmail.com" data-hi="ईमेल: sr376758@gmail.com">Email: <a href="mailto:sr376758@gmail.com">sr376758@gmail.com</a></p>
+          <p data-en="Phone: +91 98015 14737" data-hi="फ़ोन: +91 98015 14737">Phone: <a href="tel:+919801514737">+91 98015 14737</a></p>
+          <p class="small" data-en="Madansath, Manjhi, Saran — 841201 (CBSE)" data-hi="मदनसथ, मांझी, सारण — 841201 (CBSE)">Madansath, Manjhi, Saran — 841201 (CBSE)</p>
+        </aside>
+      </div>
+    </section>
+
+    <!-- टेस्टिमोनियल सेक्शन (स्थिर अनुभाग) -->
+    <section class="container testimonials">
+      <h2 class="section-title" data-en="What parents say" data-hi="अभिभावकों की राय">What parents say</h2>
+      <div class="test-grid">
+        <blockquote>
+          <p>"Excellent support and teachers who really know each child."</p>
+          <footer>— Praveen Kr. Branwal, parent</footer>
+        </blockquote>
+        <blockquote>
+          <p>"A well-balanced school with great arts and sports programs."</p>
+          <footer>— Manju Devi, parent</footer>
+        </blockquote>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <strong data-en="R. K. Mission Public School" data-hi="आर. के. मिशन पब्लिक स्कूल">R. K. Mission Public School</strong>
+        <p class="small">© <span id="year"></span> R. K. Mission Public School. All rights reserved.</p>
+      </div>
+      <nav class="footer-nav">
+        <a href="about.html" data-en="About" data-hi="हमारे बारे में">About</a>
+        <a href="school-info.html" data-en="Academics" data-hi="शिक्षा / अकादमिक">Academics</a>
+        <a href="contact.html" data-en="Contact" data-hi="संपर्क">Contact</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

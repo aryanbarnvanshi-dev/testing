@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Contact — R. K. Mission Public School</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="assets/logo.png" />
+</head>
+<body class="theme-light">
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html">
+        <img src="assets/logo.png" alt="School logo" class="logo" />
+        <span class="brand-name" data-en="R. K. Mission Public School" data-hi="आर. के. मिशन पब्लिक स्कूल">R. K. Mission Public School</span>
+      </a>
+      <button id="nav-toggle" class="nav-toggle" aria-label="Toggle navigation"><span></span><span></span><span></span></button>
+      <nav id="main-nav" class="nav" aria-label="Main navigation">
+        <a href="index.html" class="nav-link" data-en="Home" data-hi="होम">Home</a>
+        <a href="about.html" class="nav-link" data-en="About" data-hi="हमारे बारे में">About</a>
+        <a href="school-info.html" class="nav-link" data-en="Academics" data-hi="शिक्षा / अकादमिक">Academics</a>
+        <a href="gallery.html" class="nav-link" data-en="Gallery" data-hi="गैलरी">Gallery</a>
+        <a href="contact.html" class="nav-link active" data-en="Contact" data-hi="संपर्क">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="container">
+      <h1 data-en="Contact Us" data-hi="संपर्क करें">Contact Us</h1>
+      <p class="lead" data-en="Questions about admissions? Send us a message directly via WhatsApp or Email." data-hi="प्रवेश के संबंध में कोई प्रश्न हैं? हमें सीधे व्हाट्सऐप या ईमेल के माध्यम से संदेश भेजें।">Questions about admissions? Send us a message directly via WhatsApp or Email.</p>
+
+      <div class="upcoming" style="margin-top: 20px;">
+        <div class="split">
+          
+          <div class="card">
+            <div style="margin-bottom: 14px;">
+              <label for="form-name" data-en="Name" data-hi="नाम">Name</label>
+              <input id="form-name" type="text" required placeholder="Your full name" data-en-placeholder="Your full name" data-hi-placeholder="आपका पूरा नाम" />
+            </div>
+
+            <div style="margin-bottom: 14px;">
+              <label for="form-email" data-en="Email" data-hi="ईमेल">Email</label>
+              <input id="form-email" type="email" required placeholder="you@example.com" data-en-placeholder="you@example.com" data-hi-placeholder="आपका ईमेल पता" />
+            </div>
+
+            <div style="margin-bottom: 14px;">
+              <label for="form-message" data-en="Message" data-hi="संदेश">Message</label>
+              <textarea id="form-message" required placeholder="How can we help?" data-en-placeholder="How can we help?" data-hi-placeholder="हम आपकी क्या सहायता कर सकते हैं?" rows="5"></textarea>
+            </div>
+
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;">
+              <button onclick="sendWhatsApp()" class="btn primary" style="background-color: #25D366 !important; border-color: #128C7E !important;" data-en="💬 Send via WhatsApp" data-hi="💬 WhatsApp पर भेजें">
+                💬 Send via WhatsApp
+              </button>
+              <button onclick="sendEmailDirect()" class="btn ghost" data-en="✉️ Send via Email" data-hi="✉️ Email से भेजें">
+                ✉️ Send via Email
+              </button>
+            </div>
+          </div>
+
+          <aside class="contact-card">
+            <h3 data-en="Visit & Connect" data-hi="स्कूल से जुड़ें">Visit & Connect</h3>
+            <p><strong>📍 Address:</strong> <span id="live-address">Madansath, Manjhi, Saran — 841201</span></p>
+            <p><strong>📧 Email:</strong> <a id="live-email-link" href="mailto:sr376758@gmail.com"><span id="live-email">sr376758@gmail.com</span></a></p>
+            <p><strong>📞 Phone / WA:</strong> <a id="live-phone-link" href="tel:+919801514737"><span id="live-phone">+91 98015 14737</span></a></p>
+          </aside>
+
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <strong data-en="R. K. Mission Public School" data-hi="आर. के. मिशन पब्लिक स्कूल">R. K. Mission Public School</strong>
+        <p class="small">© <span id="year"></span> R. K. Mission Public School. All rights reserved.</p>
+      </div>
+      <nav class="footer-nav">
+        <a href="about.html" data-en="About" data-hi="हमारे बारे में">About</a>
+        <a href="school-info.html" data-en="Academics" data-hi="शिक्षा / अकादमिक">Academics</a>
+        <a href="contact.html" data-en="Contact" data-hi="संपर्क">Contact</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+
+  <script>
+    // डिफ़ॉल्ट बैकअप डेटा (यदि शीट लोड न हो पाए तो यह काम करेगा)
+    let dynamicWhatsApp = "919801514737"; 
+    let dynamicGmail = "sr376758@gmail.com";
+
+    // गूगल शीट से संपर्क विवरण सिंक करने का फंक्शन
+    async function syncContactDetails() {
+      if (typeof fetchSheetTab !== 'function') {
+        setTimeout(syncContactDetails, 300);
+        return;
+      }
+
+      // शीट के 'School_Contact_Info' टैब (GID: 1257749711) से डेटा उठाना
+      const contactData = await fetchSheetTab('School_Event'); 
+      // ध्यान दें: आपकी मैपिंग के अनुसार 'School_Event' कुंजी का GID 1257749711 है।
+      
+      if (contactData && contactData.length > 0) {
+        contactData.forEach(row => {
+          const key = row.Key ? row.Key.trim().toLowerCase() : '';
+          const value = row.Value ? row.Value.trim() : '';
+          
+          if (key === 'address' && value) {
+            document.getElementById('live-address').textContent = value;
+          }
+          if (key === 'email' && value) {
+            dynamicGmail = value;
+            document.getElementById('live-email').textContent = value;
+            document.getElementById('live-email-link').href = `mailto:${value}`;
+          }
+          if (key === 'phone' && value) {
+            document.getElementById('live-phone').textContent = value;
+            document.getElementById('live-phone-link').href = `tel:${value.replace(/\s+/g, '')}`;
+          }
+          if (key === 'whatsapp_num' && value) {
+            dynamicWhatsApp = value.replace(/[^0-9]/g, ''); // सिर्फ नंबर सुरक्षित रखें
+          }
+        });
+      }
+    }
+
+    function getCurrentLang() {
+      return document.documentElement.lang === 'hi' ? 'hi' : 'en';
+    }
+
+    function sendWhatsApp() {
+      const name = document.getElementById('form-name').value.trim();
+      const email = document.getElementById('form-email').value.trim();
+      const message = document.getElementById('form-message').value.trim();
+      const isHi = getCurrentLang() === 'hi';
+
+      if(!name || !email || !message) {
+        alert(isHi ? "कृपया सभी फ़ील्ड भरें!" : "Please fill out all fields!");
+        return;
+      }
+
+      const text = `*R. K. Mission Public School - New Inquiry*\n\n*Name:* ${name}\n*Email:* ${email}\n*Message:* ${message}`;
+      const encodedText = encodeURIComponent(text);
+      window.open(`https://api.whatsapp.com/send?phone=${dynamicWhatsApp}&text=${encodedText}`, '_blank');
+    }
+
+    function sendEmailDirect() {
+      const name = document.getElementById('form-name').value.trim();
+      const email = document.getElementById('form-email').value.trim();
+      const message = document.getElementById('form-message').value.trim();
+      const isHi = getCurrentLang() === 'hi';
+
+      if(!name || !email || !message) {
+        alert(isHi ? "कृपया सभी फ़ील्ड भरें!" : "Please fill out all fields!");
+        return;
+      }
+
+      const subject = encodeURIComponent("R. K. Mission School Inquiry from " + name);
+      const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`);
+      window.location.href = `mailto:${dynamicGmail}?subject=${subject}&body=${body}`;
+    }
+
+    // पेज लोड होने पर सिंक शुरू करें
+    syncContactDetails();
+  </script>
+</body>
+</html>
