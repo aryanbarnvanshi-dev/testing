@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - School Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .admin-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .admin-header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .admin-header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .admin-content {
+            padding: 30px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #eee;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            padding: 12px 24px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 1em;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-btn:hover {
+            color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="url"],
+        input[type="date"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1em;
+            font-family: inherit;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="url"]:focus,
+        input[type="date"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-danger {
+            background: #ff4757;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #ff3838;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .data-table th {
+            background: #f5f5f5;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .data-table td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .data-table tr:hover {
+            background: #f9f9f9;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs {
+                overflow-x: auto;
+            }
+
+            .admin-header h1 {
+                font-size: 1.8em;
+            }
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .data-view {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 6px;
+            margin-top: 20px;
+        }
+
+        .data-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            border-left: 4px solid #667eea;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .spinner {
+            border: 4px solid #f0f0f0;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1>School Admin Panel</h1>
+            <p>Manage all school content from Google Sheets</p>
+        </div>
+
+        <div class="admin-content">
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
+                <button class="tab-btn" data-tab="notices">Notices</button>
+                <button class="tab-btn" data-tab="events">Events</button>
+                <button class="tab-btn" data-tab="programs">Programs</button>
+                <button class="tab-btn" data-tab="fees">Fees</button>
+                <button class="tab-btn" data-tab="messages">Messages</button>
+                <button class="tab-btn" data-tab="contact">Contact Info</button>
+                <button class="tab-btn" data-tab="gallery">Gallery</button>
+            </div>
+
+            <!-- Dashboard Tab -->
+            <div id="dashboard" class="tab-content active">
+                <h2>Dashboard Overview</h2>
+                <p style="color: #666; margin-top: 10px;">Welcome to the School Management Admin Panel. Use the tabs above to manage different sections of your school website.</p>
+                
+                <div class="grid-2" style="margin-top: 30px;">
+                    <div class="data-view">
+                        <h3>Latest Notices</h3>
+                        <div id="dashboard-notices"></div>
+                    </div>
+                    <div class="data-view">
+                        <h3>Upcoming Events</h3>
+                        <div id="dashboard-events"></div>
+                    </div>
+                </div>
+
+                <div class="data-view" style="margin-top: 20px;">
+                    <h3>Quick Links</h3>
+                    <p>Edit data directly in your <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vTeZtJOP880SPiIbYiyTgabu7rO1SK_etVByXLa2x8LFL9tqluOjIF25FlrOVI4aJuZn1CVLpp8Msmr/edit" target="_blank" style="color: #667eea; text-decoration: none;">Google Sheet</a></p>
+                </div>
+            </div>
+
+            <!-- Notices Tab -->
+            <div id="notices" class="tab-content">
+                <h2>Latest Notices</h2>
+                <div id="notices-view" class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading notices...</p>
+                </div>
+            </div>
+
+            <!-- Events Tab -->
+            <div id="events" class="tab-content">
+                <h2>Upcoming Events</h2>
+                <div id="events-view" class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading events...</p>
+                </div>
+            </div>
+
+            <!-- Programs Tab -->
+            <div id="programs" class="tab-content">
+                <h2>School Programs</h2>
+                <div id="programs-view" class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading programs...</p>
+                </div>
+            </div>
+
+            <!-- Fees Tab -->
+            <div id="fees" class="tab-content">
+                <h2>Fee Structure</h2>
+                <div id="fees-view" class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading fees...</p>
+                </div>
+            </div>
+
+            <!-- Messages Tab -->
+            <div id="messages" class="tab-content">
+                <h2>Management Messages</h2>
+                <div id="messages-view" class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading messages...</p>
+                </div>
+            </div>
+
+            <!-- Contact Tab -->
+            <div id="contact" class="tab-content">
+                <h2>School Contact Information</h2>
+                <div id="contact-view" class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading contact info...</p>
+                </div>
+            </div>
+
+            <!-- Gallery Tab -->
+            <div id="gallery" class="tab-content">
+                <h2>Gallery Management</h2>
+                <div id="gallery-view" class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading gallery...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Admin-specific initialization
+        (function() {
+            const tabs = document.querySelectorAll('.tab-btn');
+            const contents = document.querySelectorAll('.tab-content');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const targetTab = tab.getAttribute('data-tab');
+                    
+                    // Remove active class from all tabs and contents
+                    tabs.forEach(t => t.classList.remove('active'));
+                    contents.forEach(c => c.classList.remove('active'));
+                    
+                    // Add active class to clicked tab and corresponding content
+                    tab.classList.add('active');
+                    document.getElementById(targetTab).classList.add('active');
+
+                    // Load data for the tab
+                    loadTabData(targetTab);
+                });
+            });
+
+            async function loadTabData(tabName) {
+                try {
+                    let data = [];
+                    let viewElement = document.getElementById(tabName + '-view');
+
+                    switch(tabName) {
+                        case 'notices':
+                            data = await window.fetchSheetTab('Latest_Notices');
+                            displayNotices(data, viewElement);
+                            break;
+                        case 'events':
+                            data = await window.fetchSheetTab('Upcoming_Events');
+                            displayEvents(data, viewElement);
+                            break;
+                        case 'programs':
+                            data = await window.fetchSheetTab('School_Programs');
+                            displayPrograms(data, viewElement);
+                            break;
+                        case 'fees':
+                            data = await window.fetchSheetTab('Fee_Structure');
+                            displayFees(data, viewElement);
+                            break;
+                        case 'messages':
+                            data = await window.fetchSheetTab('Management_Messages');
+                            displayMessages(data, viewElement);
+                            break;
+                        case 'contact':
+                            data = await window.fetchSheetTab('School_Contact_Info');
+                            displayContact(data, viewElement);
+                            break;
+                        case 'gallery':
+                            data = await window.fetchSheetTab('Gallery_Data');
+                            displayGallery(data, viewElement);
+                            break;
+                        case 'dashboard':
+                            loadDashboard();
+                            break;
+                    }
+                } catch(err) {
+                    console.error('Error loading tab data:', err);
+                }
+            }
+
+            async function loadDashboard() {
+                const notices = await window.fetchSheetTab('Latest_Notices');
+                const events = await window.fetchSheetTab('Upcoming_Events');
+                
+                let noticesHtml = '';
+                notices.slice(0, 3).forEach(n => {
+                    noticesHtml += `<div class="data-item"><p>${n.Notice_EN || n.Notice_HI}</p></div>`;
+                });
+                document.getElementById('dashboard-notices').innerHTML = noticesHtml || '<p style="color: #999;">No notices available</p>';
+
+                let eventsHtml = '';
+                events.slice(0, 3).forEach(e => {
+                    eventsHtml += `<div class="data-item"><p><strong>${e.Event_EN || e.Event_HI}</strong> — ${e.Date_EN || e.Date_HI}</p></div>`;
+                });
+                document.getElementById('dashboard-events').innerHTML = eventsHtml || '<p style="color: #999;">No events available</p>';
+            }
+
+            function displayNotices(data, container) {
+                if (!data.length) {
+                    container.innerHTML = '<p style="color: #999;">No notices available</p>';
+                    return;
+                }
+                let html = '';
+                data.forEach((item, idx) => {
+                    html += `
+                        <div class="data-item">
+                            <p><strong>Notice ${idx + 1}</strong></p>
+                            <p>${item.Notice_EN || item.Notice_HI}</p>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            }
+
+            function displayEvents(data, container) {
+                if (!data.length) {
+                    container.innerHTML = '<p style="color: #999;">No events available</p>';
+                    return;
+                }
+                let html = '';
+                data.forEach((item, idx) => {
+                    html += `
+                        <div class="data-item">
+                            <p><strong>${item.Event_EN || item.Event_HI}</strong></p>
+                            <p>📅 ${item.Date_EN || item.Date_HI}</p>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            }
+
+            function displayPrograms(data, container) {
+                if (!data.length) {
+                    container.innerHTML = '<p style="color: #999;">No programs available</p>';
+                    return;
+                }
+                let html = '<table class="data-table"><thead><tr><th>Program</th><th>Description</th></tr></thead><tbody>';
+                data.forEach(item => {
+                    html += `
+                        <tr>
+                            <td><strong>${item.Group_EN || item.Group_HI}</strong></td>
+                            <td>${item.Desc_EN || item.Desc_HI}</td>
+                        </tr>
+                    `;
+                });
+                html += '</tbody></table>';
+                container.innerHTML = html;
+            }
+
+            function displayFees(data, container) {
+                if (!data.length) {
+                    container.innerHTML = '<p style="color: #999;">No fee data available</p>';
+                    return;
+                }
+                let html = '<table class="data-table"><thead><tr><th>Category</th><th>Fee Amount</th></tr></thead><tbody>';
+                data.forEach(item => {
+                    html += `
+                        <tr>
+                            <td><strong>${item.Category_EN || item.Category_HI}</strong></td>
+                            <td>₹ ${item.Fee_Amount}</td>
+                        </tr>
+                    `;
+                });
+                html += '</tbody></table>';
+                container.innerHTML = html;
+            }
+
+            function displayMessages(data, container) {
+                if (!data.length) {
+                    container.innerHTML = '<p style="color: #999;">No messages available</p>';
+                    return;
+                }
+                let html = '';
+                data.forEach(item => {
+                    html += `
+                        <div class="data-item">
+                            <p><strong>${item.Name} (${item.Role})</strong></p>
+                            <p>${item.Message_EN || item.Message_HI}</p>
+                            ${item.Photo_URL ? `<img src="${item.Photo_URL}" alt="${item.Name}" style="max-width: 100px; margin-top: 10px; border-radius: 6px;">` : ''}
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            }
+
+            function displayContact(data, container) {
+                if (!data.length) {
+                    container.innerHTML = '<p style="color: #999;">No contact info available</p>';
+                    return;
+                }
+                let html = '';
+                data.forEach(item => {
+                    html += `
+                        <div class="data-item">
+                            <p><strong>${item.Key}:</strong> <span>${item.Value}</span></p>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            }
+
+            function displayGallery(data, container) {
+                if (!data.length) {
+                    container.innerHTML = '<p style="color: #999;">No gallery items available</p>';
+                    return;
+                }
+                let html = '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px;">';
+                data.forEach(item => {
+                    if (item['Image URL']) {
+                        html += `
+                            <div style="background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                <img src="${item['Image URL']}" alt="${item['Event Title (English)']}" style="width: 100%; height: 200px; object-fit: cover;">
+                                <div style="padding: 15px;">
+                                    <h4>${item['Event Title (English)'] || item['इवेंट का नाम (Hindi)']}</h4>
+                                    <p style="color: #666; font-size: 0.9em;">${item['Description (English)'] || item['विवरण (Hindi)']}</p>
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+                html += '</div>';
+                container.innerHTML = html;
+            }
+
+            // Initial load
+            loadDashboard();
+        })();
+    </script>
+</body>
+</html>
