@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - School Management</title>
+    <title>School Admin - Website Management System</title>
     <style>
         * {
             margin: 0;
@@ -19,7 +19,7 @@
         }
 
         .admin-container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             background: white;
             border-radius: 12px;
@@ -31,21 +31,78 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             padding: 30px;
-            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
         }
 
         .admin-header h1 {
             font-size: 2.5em;
-            margin-bottom: 10px;
+            margin: 0;
         }
 
-        .admin-header p {
-            font-size: 1.1em;
-            opacity: 0.9;
+        .header-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .btn-settings, .btn-lang {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .btn-settings:hover, .btn-lang:hover {
+            background: rgba(255, 255, 255, 0.3);
         }
 
         .admin-content {
             padding: 30px;
+        }
+
+        .setup-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .setup-modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-content h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .modal-content p {
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.6;
         }
 
         .tabs {
@@ -65,6 +122,7 @@
             color: #666;
             border-bottom: 3px solid transparent;
             transition: all 0.3s ease;
+            white-space: nowrap;
         }
 
         .tab-btn.active {
@@ -134,6 +192,7 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
+            display: inline-block;
         }
 
         .btn-primary {
@@ -149,6 +208,7 @@
         .btn-secondary {
             background: #f0f0f0;
             color: #333;
+            margin-left: 10px;
         }
 
         .btn-secondary:hover {
@@ -158,10 +218,17 @@
         .btn-danger {
             background: #ff4757;
             color: white;
+            padding: 8px 16px;
+            font-size: 0.9em;
         }
 
         .btn-danger:hover {
             background: #ff3838;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 0.85em;
         }
 
         .data-table {
@@ -188,6 +255,11 @@
             background: #f9f9f9;
         }
 
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+
         .grid-2 {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -203,6 +275,11 @@
                 overflow-x: auto;
             }
 
+            .admin-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
             .admin-header h1 {
                 font-size: 1.8em;
             }
@@ -212,6 +289,11 @@
             padding: 15px;
             border-radius: 6px;
             margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert.show {
+            display: block;
         }
 
         .alert-success {
@@ -267,52 +349,103 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .edit-form {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .edit-form.active {
+            display: block;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #666;
+            float: right;
+        }
     </style>
 </head>
 <body>
     <div class="admin-container">
         <div class="admin-header">
-            <h1>School Admin Panel</h1>
-            <p>Manage all school content from Google Sheets</p>
+            <div>
+                <h1>📚 School Admin Panel</h1>
+            </div>
+            <div class="header-controls">
+                <button class="btn-lang" id="lang-toggle">हिंदी / English</button>
+                <button class="btn-settings" id="settings-btn">⚙️ Settings</button>
+            </div>
         </div>
 
         <div class="admin-content">
+            <div id="alert" class="alert"></div>
+
             <div class="tabs">
-                <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
-                <button class="tab-btn" data-tab="notices">Notices</button>
-                <button class="tab-btn" data-tab="events">Events</button>
-                <button class="tab-btn" data-tab="programs">Programs</button>
-                <button class="tab-btn" data-tab="fees">Fees</button>
-                <button class="tab-btn" data-tab="messages">Messages</button>
-                <button class="tab-btn" data-tab="contact">Contact Info</button>
-                <button class="tab-btn" data-tab="gallery">Gallery</button>
+                <button class="tab-btn active" data-tab="dashboard">📊 Dashboard</button>
+                <button class="tab-btn" data-tab="notices">📢 Notices</button>
+                <button class="tab-btn" data-tab="events">📅 Events</button>
+                <button class="tab-btn" data-tab="programs">🎓 Programs</button>
+                <button class="tab-btn" data-tab="fees">💰 Fees</button>
+                <button class="tab-btn" data-tab="messages">💬 Messages</button>
+                <button class="tab-btn" data-tab="contact">📞 Contact</button>
+                <button class="tab-btn" data-tab="gallery">🖼️ Gallery</button>
             </div>
 
             <!-- Dashboard Tab -->
             <div id="dashboard" class="tab-content active">
-                <h2>Dashboard Overview</h2>
-                <p style="color: #666; margin-top: 10px;">Welcome to the School Management Admin Panel. Use the tabs above to manage different sections of your school website.</p>
+                <h2>Dashboard</h2>
+                <p style="color: #666; margin: 10px 0 30px 0;">Welcome to your School Admin Panel. Manage all your school website content from here.</p>
                 
-                <div class="grid-2" style="margin-top: 30px;">
+                <div class="grid-2">
                     <div class="data-view">
-                        <h3>Latest Notices</h3>
+                        <h3>📝 Latest Notices</h3>
                         <div id="dashboard-notices"></div>
+                        <button class="btn btn-primary btn-small" onclick="switchTab('notices')" style="margin-top: 10px;">View All</button>
                     </div>
                     <div class="data-view">
-                        <h3>Upcoming Events</h3>
+                        <h3>🎉 Upcoming Events</h3>
                         <div id="dashboard-events"></div>
+                        <button class="btn btn-primary btn-small" onclick="switchTab('events')" style="margin-top: 10px;">View All</button>
                     </div>
-                </div>
-
-                <div class="data-view" style="margin-top: 20px;">
-                    <h3>Quick Links</h3>
-                    <p>Edit data directly in your <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vTeZtJOP880SPiIbYiyTgabu7rO1SK_etVByXLa2x8LFL9tqluOjIF25FlrOVI4aJuZn1CVLpp8Msmr/edit" target="_blank" style="color: #667eea; text-decoration: none;">Google Sheet</a></p>
                 </div>
             </div>
 
             <!-- Notices Tab -->
             <div id="notices" class="tab-content">
-                <h2>Latest Notices</h2>
+                <h2>📢 Latest Notices</h2>
+                <button class="btn btn-primary" onclick="showAddForm('notices')">+ Add Notice</button>
+                <div class="edit-form" id="edit-form-notices">
+                    <button class="close-btn" onclick="hideAddForm('notices')">✕</button>
+                    <h3>Add Notice</h3>
+                    <div class="form-group">
+                        <label>Notice (English)</label>
+                        <textarea id="Notice_EN" placeholder="Enter notice in English"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Notice (Hindi)</label>
+                        <textarea id="Notice_HI" placeholder="सूचना हिंदी में दर्ज करें"></textarea>
+                    </div>
+                    <button class="btn btn-primary" onclick="addRecord('Latest_Notices', ['Notice_EN', 'Notice_HI'], 'notices')">Save Notice</button>
+                </div>
                 <div id="notices-view" class="loading">
                     <div class="spinner"></div>
                     <p>Loading notices...</p>
@@ -321,7 +454,33 @@
 
             <!-- Events Tab -->
             <div id="events" class="tab-content">
-                <h2>Upcoming Events</h2>
+                <h2>📅 Upcoming Events</h2>
+                <button class="btn btn-primary" onclick="showAddForm('events')">+ Add Event</button>
+                <div class="edit-form" id="edit-form-events">
+                    <button class="close-btn" onclick="hideAddForm('events')">✕</button>
+                    <h3>Add Event</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Event Name (English)</label>
+                            <input type="text" id="Event_EN" placeholder="Event name in English">
+                        </div>
+                        <div class="form-group">
+                            <label>Event Name (Hindi)</label>
+                            <input type="text" id="Event_HI" placeholder="इवेंट का नाम हिंदी में">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Date (English)</label>
+                            <input type="text" id="Date_EN" placeholder="25 December 2024">
+                        </div>
+                        <div class="form-group">
+                            <label>Date (Hindi)</label>
+                            <input type="text" id="Date_HI" placeholder="25 दिसंबर 2024">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="addRecord('Upcoming_Events', ['Event_EN', 'Event_HI', 'Date_EN', 'Date_HI'], 'events')">Save Event</button>
+                </div>
                 <div id="events-view" class="loading">
                     <div class="spinner"></div>
                     <p>Loading events...</p>
@@ -330,7 +489,33 @@
 
             <!-- Programs Tab -->
             <div id="programs" class="tab-content">
-                <h2>School Programs</h2>
+                <h2>🎓 School Programs</h2>
+                <button class="btn btn-primary" onclick="showAddForm('programs')">+ Add Program</button>
+                <div class="edit-form" id="edit-form-programs">
+                    <button class="close-btn" onclick="hideAddForm('programs')">✕</button>
+                    <h3>Add Program</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Program Name (English)</label>
+                            <input type="text" id="Group_EN" placeholder="Program name in English">
+                        </div>
+                        <div class="form-group">
+                            <label>Program Name (Hindi)</label>
+                            <input type="text" id="Group_HI" placeholder="प्रोग्राम का नाम हिंदी में">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Description (English)</label>
+                            <textarea id="Desc_EN" placeholder="Program description in English"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Description (Hindi)</label>
+                            <textarea id="Desc_HI" placeholder="कार्यक्रम विवरण हिंदी में"></textarea>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="addRecord('School_Programs', ['Group_EN', 'Group_HI', 'Desc_EN', 'Desc_HI'], 'programs')">Save Program</button>
+                </div>
                 <div id="programs-view" class="loading">
                     <div class="spinner"></div>
                     <p>Loading programs...</p>
@@ -339,7 +524,27 @@
 
             <!-- Fees Tab -->
             <div id="fees" class="tab-content">
-                <h2>Fee Structure</h2>
+                <h2>💰 Fee Structure</h2>
+                <button class="btn btn-primary" onclick="showAddForm('fees')">+ Add Fee Category</button>
+                <div class="edit-form" id="edit-form-fees">
+                    <button class="close-btn" onclick="hideAddForm('fees')">✕</button>
+                    <h3>Add Fee Category</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Category (English)</label>
+                            <input type="text" id="Category_EN" placeholder="Category in English">
+                        </div>
+                        <div class="form-group">
+                            <label>Category (Hindi)</label>
+                            <input type="text" id="Category_HI" placeholder="श्रेणी हिंदी में">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Fee Amount (₹)</label>
+                        <input type="text" id="Fee_Amount" placeholder="Enter amount">
+                    </div>
+                    <button class="btn btn-primary" onclick="addRecord('Fee_Structure', ['Category_EN', 'Category_HI', 'Fee_Amount'], 'fees')">Save Fee</button>
+                </div>
                 <div id="fees-view" class="loading">
                     <div class="spinner"></div>
                     <p>Loading fees...</p>
@@ -348,7 +553,41 @@
 
             <!-- Messages Tab -->
             <div id="messages" class="tab-content">
-                <h2>Management Messages</h2>
+                <h2>💬 Management Messages</h2>
+                <button class="btn btn-primary" onclick="showAddForm('messages')">+ Add Message</button>
+                <div class="edit-form" id="edit-form-messages">
+                    <button class="close-btn" onclick="hideAddForm('messages')">✕</button>
+                    <h3>Add Management Message</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Name</label>
+                            <input type="text" id="Name" placeholder="Full name">
+                        </div>
+                        <div class="form-group">
+                            <label>Role</label>
+                            <select id="Role">
+                                <option value="">Select Role</option>
+                                <option value="Principal">Principal</option>
+                                <option value="Director">Director</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Message (English)</label>
+                            <textarea id="Message_EN" placeholder="Message in English"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Message (Hindi)</label>
+                            <textarea id="Message_HI" placeholder="संदेश हिंदी में"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Photo URL</label>
+                        <input type="url" id="Photo_URL" placeholder="https://example.com/photo.jpg">
+                    </div>
+                    <button class="btn btn-primary" onclick="addRecord('Management_Messages', ['Name', 'Role', 'Message_EN', 'Message_HI', 'Photo_URL'], 'messages')">Save Message</button>
+                </div>
                 <div id="messages-view" class="loading">
                     <div class="spinner"></div>
                     <p>Loading messages...</p>
@@ -357,7 +596,23 @@
 
             <!-- Contact Tab -->
             <div id="contact" class="tab-content">
-                <h2>School Contact Information</h2>
+                <h2>📞 School Contact Information</h2>
+                <button class="btn btn-primary" onclick="showAddForm('contact')">+ Add Contact</button>
+                <div class="edit-form" id="edit-form-contact">
+                    <button class="close-btn" onclick="hideAddForm('contact')">✕</button>
+                    <h3>Add Contact Information</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Label (e.g., Phone, Email, Address)</label>
+                            <input type="text" id="Key" placeholder="Label">
+                        </div>
+                        <div class="form-group">
+                            <label>Value</label>
+                            <input type="text" id="Value" placeholder="Contact value">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="addRecord('School_Contact_Info', ['Key', 'Value'], 'contact')">Save Contact</button>
+                </div>
                 <div id="contact-view" class="loading">
                     <div class="spinner"></div>
                     <p>Loading contact info...</p>
@@ -366,7 +621,37 @@
 
             <!-- Gallery Tab -->
             <div id="gallery" class="tab-content">
-                <h2>Gallery Management</h2>
+                <h2>🖼️ Gallery Management</h2>
+                <button class="btn btn-primary" onclick="showAddForm('gallery')">+ Add Gallery Item</button>
+                <div class="edit-form" id="edit-form-gallery">
+                    <button class="close-btn" onclick="hideAddForm('gallery')">✕</button>
+                    <h3>Add Gallery Item</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Event Title (English)</label>
+                            <input type="text" id="Event Title (English)" placeholder="Event title">
+                        </div>
+                        <div class="form-group">
+                            <label>Event Title (Hindi)</label>
+                            <input type="text" id="इवेंट का नाम (Hindi)" placeholder="इवेंट का नाम">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Description (English)</label>
+                            <textarea id="Description (English)" placeholder="Description"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Description (Hindi)</label>
+                            <textarea id="विवरण (Hindi)" placeholder="विवरण"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Image URL</label>
+                        <input type="url" id="Image URL" placeholder="https://example.com/image.jpg">
+                    </div>
+                    <button class="btn btn-primary" onclick="addRecord('Gallery_Data', ['Event Title (English)', 'इवेंट का नाम (Hindi)', 'Description (English)', 'विवरण (Hindi)', 'Image URL'], 'gallery')">Save Gallery Item</button>
+                </div>
                 <div id="gallery-view" class="loading">
                     <div class="spinner"></div>
                     <p>Loading gallery...</p>
@@ -375,220 +660,410 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <!-- Settings Modal -->
+    <div id="setup-modal" class="setup-modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeSettings()">✕</button>
+            <h2>⚙️ Settings</h2>
+            
+            <div class="form-group">
+                <label>Google Sheet ID</label>
+                <p style="color: #666; font-size: 0.9em;">Go to your Google Sheet URL: <br>docs.google.com/spreadsheets/d/<strong>SHEET_ID_HERE</strong>/edit</p>
+                <input type="text" id="sheet-id" placeholder="Paste your Google Sheet ID here">
+            </div>
+
+            <div class="form-group">
+                <label>Sheet Link Format</label>
+                <p style="color: #666; font-size: 0.9em;">Your sheet must be published as CSV. Get the published link from: <br>File → Share → Publish to web → Sheet (CSV)</p>
+                <input type="text" id="sheet-url" placeholder="Paste published CSV URL" readonly>
+            </div>
+
+            <button class="btn btn-primary" onclick="saveSettings()">Save Settings</button>
+            <button class="btn btn-secondary" onclick="testConnection()">Test Connection</button>
+
+            <div id="settings-alert" class="alert" style="margin-top: 20px;"></div>
+        </div>
+    </div>
+
     <script>
-        // Admin-specific initialization
-        (function() {
-            const tabs = document.querySelectorAll('.tab-btn');
-            const contents = document.querySelectorAll('.tab-content');
+        // Global configuration
+        let CONFIG = {
+            sheetUrl: localStorage.getItem('SITE_SHEET_URL') || '',
+            gidMap: {
+                'Latest_Notices': '0',
+                'Homepage_Hero': '1138185747',
+                'Upcoming_Events': '626556615',
+                'School_Programs': '1741484813',
+                'Fee_Structure': '229418024',
+                'Management_Messages': '153222206',
+                'School_Contact_Info': '1257749711',
+                'Gallery_Data': '1867332244'
+            }
+        };
 
-            tabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    const targetTab = tab.getAttribute('data-tab');
-                    
-                    // Remove active class from all tabs and contents
-                    tabs.forEach(t => t.classList.remove('active'));
-                    contents.forEach(c => c.classList.remove('active'));
-                    
-                    // Add active class to clicked tab and corresponding content
-                    tab.classList.add('active');
-                    document.getElementById(targetTab).classList.add('active');
+        let CURRENT_LANG = localStorage.getItem('admin_lang') || 'en';
 
-                    // Load data for the tab
-                    loadTabData(targetTab);
-                });
+        // Override window object for compatibility with script.js
+        window.SITE_SHEET_URL = CONFIG.sheetUrl;
+
+        async function fetchSheetTab(tabName) {
+            if (!CONFIG.sheetUrl) {
+                showAlert('Please configure your Google Sheet URL in Settings', 'error');
+                openSettings();
+                return [];
+            }
+
+            const baseUrl = CONFIG.sheetUrl.split('&gid=')[0].split('?')[0];
+            const finalURL = `${baseUrl}?gid=${CONFIG.gidMap[tabName]}&output=csv`;
+            
+            try {
+                const res = await fetch(finalURL);
+                if (!res.ok) throw new Error("Network error");
+                const text = await res.text();
+                return parseCSV(text);
+            } catch (err) {
+                console.error(`Error fetching tab ${tabName}:`, err);
+                showAlert(`Error loading ${tabName}`, 'error');
+                return [];
+            }
+        }
+
+        function parseCSV(text) {
+            const lines = text.split(/\r?\n/);
+            if (lines.length < 2) return [];
+            const headers = lines[0].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(h => h.trim().replace(/^"|"$/g, ''));
+            const records = [];
+            for (let i = 1; i < lines.length; i++) {
+                if (!lines[i].trim()) continue;
+                const fields = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(f => f.trim().replace(/^"|"$/g, ''));
+                const item = {};
+                headers.forEach((header, index) => { item[header] = fields[index] || ''; });
+                records.push(item);
+            }
+            return records;
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+            
+            loadTabData(tabName);
+        }
+
+        async function loadTabData(tabName) {
+            const viewElement = document.getElementById(tabName + '-view');
+            if (!viewElement) return;
+
+            viewElement.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading...</p></div>';
+
+            try {
+                let data = [];
+                switch(tabName) {
+                    case 'dashboard':
+                        await loadDashboard();
+                        return;
+                    case 'notices':
+                        data = await fetchSheetTab('Latest_Notices');
+                        displayNotices(data, viewElement);
+                        break;
+                    case 'events':
+                        data = await fetchSheetTab('Upcoming_Events');
+                        displayEvents(data, viewElement);
+                        break;
+                    case 'programs':
+                        data = await fetchSheetTab('School_Programs');
+                        displayPrograms(data, viewElement);
+                        break;
+                    case 'fees':
+                        data = await fetchSheetTab('Fee_Structure');
+                        displayFees(data, viewElement);
+                        break;
+                    case 'messages':
+                        data = await fetchSheetTab('Management_Messages');
+                        displayMessages(data, viewElement);
+                        break;
+                    case 'contact':
+                        data = await fetchSheetTab('School_Contact_Info');
+                        displayContact(data, viewElement);
+                        break;
+                    case 'gallery':
+                        data = await fetchSheetTab('Gallery_Data');
+                        displayGallery(data, viewElement);
+                        break;
+                }
+            } catch(err) {
+                console.error('Error loading tab:', err);
+                viewElement.innerHTML = '<p style="color: #999;">Error loading data</p>';
+            }
+        }
+
+        async function loadDashboard() {
+            const notices = await fetchSheetTab('Latest_Notices');
+            const events = await fetchSheetTab('Upcoming_Events');
+            
+            let noticesHtml = '';
+            notices.slice(0, 3).forEach(n => {
+                const text = CURRENT_LANG === 'hi' ? (n.Notice_HI || n.Notice_EN) : n.Notice_EN;
+                noticesHtml += `<div class="data-item"><p>${text}</p></div>`;
             });
+            document.getElementById('dashboard-notices').innerHTML = noticesHtml || '<p style="color: #999;">No notices</p>';
 
-            async function loadTabData(tabName) {
-                try {
-                    let data = [];
-                    let viewElement = document.getElementById(tabName + '-view');
+            let eventsHtml = '';
+            events.slice(0, 3).forEach(e => {
+                const title = CURRENT_LANG === 'hi' ? (e.Event_HI || e.Event_EN) : e.Event_EN;
+                const date = CURRENT_LANG === 'hi' ? (e.Date_HI || e.Date_EN) : e.Date_EN;
+                eventsHtml += `<div class="data-item"><p><strong>${title}</strong> — ${date}</p></div>`;
+            });
+            document.getElementById('dashboard-events').innerHTML = eventsHtml || '<p style="color: #999;">No events</p>';
+        }
 
-                    switch(tabName) {
-                        case 'notices':
-                            data = await window.fetchSheetTab('Latest_Notices');
-                            displayNotices(data, viewElement);
-                            break;
-                        case 'events':
-                            data = await window.fetchSheetTab('Upcoming_Events');
-                            displayEvents(data, viewElement);
-                            break;
-                        case 'programs':
-                            data = await window.fetchSheetTab('School_Programs');
-                            displayPrograms(data, viewElement);
-                            break;
-                        case 'fees':
-                            data = await window.fetchSheetTab('Fee_Structure');
-                            displayFees(data, viewElement);
-                            break;
-                        case 'messages':
-                            data = await window.fetchSheetTab('Management_Messages');
-                            displayMessages(data, viewElement);
-                            break;
-                        case 'contact':
-                            data = await window.fetchSheetTab('School_Contact_Info');
-                            displayContact(data, viewElement);
-                            break;
-                        case 'gallery':
-                            data = await window.fetchSheetTab('Gallery_Data');
-                            displayGallery(data, viewElement);
-                            break;
-                        case 'dashboard':
-                            loadDashboard();
-                            break;
-                    }
-                } catch(err) {
-                    console.error('Error loading tab data:', err);
-                }
+        function displayNotices(data, container) {
+            if (!data.length) {
+                container.innerHTML = '<p style="color: #999;">No notices. Add one to get started!</p>';
+                return;
             }
+            let html = '';
+            data.forEach((item, idx) => {
+                const text = CURRENT_LANG === 'hi' ? (item.Notice_HI || item.Notice_EN) : item.Notice_EN;
+                html += `
+                    <div class="data-item">
+                        <p>${text}</p>
+                        <button class="btn btn-danger btn-small" onclick="deleteRecord('Latest_Notices', ${idx})">Delete</button>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
 
-            async function loadDashboard() {
-                const notices = await window.fetchSheetTab('Latest_Notices');
-                const events = await window.fetchSheetTab('Upcoming_Events');
-                
-                let noticesHtml = '';
-                notices.slice(0, 3).forEach(n => {
-                    noticesHtml += `<div class="data-item"><p>${n.Notice_EN || n.Notice_HI}</p></div>`;
-                });
-                document.getElementById('dashboard-notices').innerHTML = noticesHtml || '<p style="color: #999;">No notices available</p>';
-
-                let eventsHtml = '';
-                events.slice(0, 3).forEach(e => {
-                    eventsHtml += `<div class="data-item"><p><strong>${e.Event_EN || e.Event_HI}</strong> — ${e.Date_EN || e.Date_HI}</p></div>`;
-                });
-                document.getElementById('dashboard-events').innerHTML = eventsHtml || '<p style="color: #999;">No events available</p>';
+        function displayEvents(data, container) {
+            if (!data.length) {
+                container.innerHTML = '<p style="color: #999;">No events. Add one to get started!</p>';
+                return;
             }
+            let html = '';
+            data.forEach((item, idx) => {
+                const title = CURRENT_LANG === 'hi' ? (item.Event_HI || item.Event_EN) : item.Event_EN;
+                const date = CURRENT_LANG === 'hi' ? (item.Date_HI || item.Date_EN) : item.Date_EN;
+                html += `
+                    <div class="data-item">
+                        <p><strong>${title}</strong></p>
+                        <p>📅 ${date}</p>
+                        <button class="btn btn-danger btn-small" onclick="deleteRecord('Upcoming_Events', ${idx})">Delete</button>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
 
-            function displayNotices(data, container) {
-                if (!data.length) {
-                    container.innerHTML = '<p style="color: #999;">No notices available</p>';
-                    return;
-                }
-                let html = '';
-                data.forEach((item, idx) => {
+        function displayPrograms(data, container) {
+            if (!data.length) {
+                container.innerHTML = '<p style="color: #999;">No programs. Add one to get started!</p>';
+                return;
+            }
+            let html = '<table class="data-table"><thead><tr><th>Program</th><th>Description</th><th>Action</th></tr></thead><tbody>';
+            data.forEach((item, idx) => {
+                const title = CURRENT_LANG === 'hi' ? (item.Group_HI || item.Group_EN) : item.Group_EN;
+                const desc = CURRENT_LANG === 'hi' ? (item.Desc_HI || item.Desc_EN) : item.Desc_EN;
+                html += `
+                    <tr>
+                        <td><strong>${title}</strong></td>
+                        <td>${desc}</td>
+                        <td><button class="btn btn-danger btn-small" onclick="deleteRecord('School_Programs', ${idx})">Delete</button></td>
+                    </tr>
+                `;
+            });
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        function displayFees(data, container) {
+            if (!data.length) {
+                container.innerHTML = '<p style="color: #999;">No fees. Add one to get started!</p>';
+                return;
+            }
+            let html = '<table class="data-table"><thead><tr><th>Category</th><th>Amount</th><th>Action</th></tr></thead><tbody>';
+            data.forEach((item, idx) => {
+                const cat = CURRENT_LANG === 'hi' ? (item.Category_HI || item.Category_EN) : item.Category_EN;
+                html += `
+                    <tr>
+                        <td><strong>${cat}</strong></td>
+                        <td>₹ ${item.Fee_Amount}</td>
+                        <td><button class="btn btn-danger btn-small" onclick="deleteRecord('Fee_Structure', ${idx})">Delete</button></td>
+                    </tr>
+                `;
+            });
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        function displayMessages(data, container) {
+            if (!data.length) {
+                container.innerHTML = '<p style="color: #999;">No messages. Add one to get started!</p>';
+                return;
+            }
+            let html = '';
+            data.forEach((item, idx) => {
+                const text = CURRENT_LANG === 'hi' ? (item.Message_HI || item.Message_EN) : item.Message_EN;
+                html += `
+                    <div class="data-item">
+                        <p><strong>${item.Name} (${item.Role})</strong></p>
+                        <p>${text}</p>
+                        ${item.Photo_URL ? `<img src="${item.Photo_URL}" alt="${item.Name}" style="max-width: 100px; margin-top: 10px; border-radius: 6px;">` : ''}
+                        <br><button class="btn btn-danger btn-small" style="margin-top: 10px;" onclick="deleteRecord('Management_Messages', ${idx})">Delete</button>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function displayContact(data, container) {
+            if (!data.length) {
+                container.innerHTML = '<p style="color: #999;">No contact info. Add one to get started!</p>';
+                return;
+            }
+            let html = '';
+            data.forEach((item, idx) => {
+                html += `
+                    <div class="data-item">
+                        <p><strong>${item.Key}:</strong> <span>${item.Value}</span></p>
+                        <button class="btn btn-danger btn-small" onclick="deleteRecord('School_Contact_Info', ${idx})">Delete</button>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function displayGallery(data, container) {
+            if (!data.length) {
+                container.innerHTML = '<p style="color: #999;">No gallery items. Add one to get started!</p>';
+                return;
+            }
+            let html = '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px;">';
+            data.forEach((item, idx) => {
+                if (item['Image URL']) {
+                    const title = CURRENT_LANG === 'hi' ? (item['इवेंट का नाम (Hindi)'] || item['Event Title (English)']) : item['Event Title (English)'];
                     html += `
-                        <div class="data-item">
-                            <p><strong>Notice ${idx + 1}</strong></p>
-                            <p>${item.Notice_EN || item.Notice_HI}</p>
-                        </div>
-                    `;
-                });
-                container.innerHTML = html;
-            }
-
-            function displayEvents(data, container) {
-                if (!data.length) {
-                    container.innerHTML = '<p style="color: #999;">No events available</p>';
-                    return;
-                }
-                let html = '';
-                data.forEach((item, idx) => {
-                    html += `
-                        <div class="data-item">
-                            <p><strong>${item.Event_EN || item.Event_HI}</strong></p>
-                            <p>📅 ${item.Date_EN || item.Date_HI}</p>
-                        </div>
-                    `;
-                });
-                container.innerHTML = html;
-            }
-
-            function displayPrograms(data, container) {
-                if (!data.length) {
-                    container.innerHTML = '<p style="color: #999;">No programs available</p>';
-                    return;
-                }
-                let html = '<table class="data-table"><thead><tr><th>Program</th><th>Description</th></tr></thead><tbody>';
-                data.forEach(item => {
-                    html += `
-                        <tr>
-                            <td><strong>${item.Group_EN || item.Group_HI}</strong></td>
-                            <td>${item.Desc_EN || item.Desc_HI}</td>
-                        </tr>
-                    `;
-                });
-                html += '</tbody></table>';
-                container.innerHTML = html;
-            }
-
-            function displayFees(data, container) {
-                if (!data.length) {
-                    container.innerHTML = '<p style="color: #999;">No fee data available</p>';
-                    return;
-                }
-                let html = '<table class="data-table"><thead><tr><th>Category</th><th>Fee Amount</th></tr></thead><tbody>';
-                data.forEach(item => {
-                    html += `
-                        <tr>
-                            <td><strong>${item.Category_EN || item.Category_HI}</strong></td>
-                            <td>₹ ${item.Fee_Amount}</td>
-                        </tr>
-                    `;
-                });
-                html += '</tbody></table>';
-                container.innerHTML = html;
-            }
-
-            function displayMessages(data, container) {
-                if (!data.length) {
-                    container.innerHTML = '<p style="color: #999;">No messages available</p>';
-                    return;
-                }
-                let html = '';
-                data.forEach(item => {
-                    html += `
-                        <div class="data-item">
-                            <p><strong>${item.Name} (${item.Role})</strong></p>
-                            <p>${item.Message_EN || item.Message_HI}</p>
-                            ${item.Photo_URL ? `<img src="${item.Photo_URL}" alt="${item.Name}" style="max-width: 100px; margin-top: 10px; border-radius: 6px;">` : ''}
-                        </div>
-                    `;
-                });
-                container.innerHTML = html;
-            }
-
-            function displayContact(data, container) {
-                if (!data.length) {
-                    container.innerHTML = '<p style="color: #999;">No contact info available</p>';
-                    return;
-                }
-                let html = '';
-                data.forEach(item => {
-                    html += `
-                        <div class="data-item">
-                            <p><strong>${item.Key}:</strong> <span>${item.Value}</span></p>
-                        </div>
-                    `;
-                });
-                container.innerHTML = html;
-            }
-
-            function displayGallery(data, container) {
-                if (!data.length) {
-                    container.innerHTML = '<p style="color: #999;">No gallery items available</p>';
-                    return;
-                }
-                let html = '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px;">';
-                data.forEach(item => {
-                    if (item['Image URL']) {
-                        html += `
-                            <div style="background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                                <img src="${item['Image URL']}" alt="${item['Event Title (English)']}" style="width: 100%; height: 200px; object-fit: cover;">
-                                <div style="padding: 15px;">
-                                    <h4>${item['Event Title (English)'] || item['इवेंट का नाम (Hindi)']}</h4>
-                                    <p style="color: #666; font-size: 0.9em;">${item['Description (English)'] || item['विवरण (Hindi)']}</p>
-                                </div>
+                        <div style="background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                            <img src="${item['Image URL']}" alt="${title}" style="width: 100%; height: 150px; object-fit: cover;">
+                            <div style="padding: 10px;">
+                                <h4 style="font-size: 0.9em;">${title}</h4>
+                                <button class="btn btn-danger btn-small" onclick="deleteRecord('Gallery_Data', ${idx})">Delete</button>
                             </div>
-                        `;
-                    }
-                });
-                html += '</div>';
-                container.innerHTML = html;
+                        </div>
+                    `;
+                }
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        function showAddForm(tabName) {
+            document.getElementById('edit-form-' + tabName).classList.add('active');
+        }
+
+        function hideAddForm(tabName) {
+            document.getElementById('edit-form-' + tabName).classList.remove('active');
+            // Clear form
+            document.querySelectorAll(`#edit-form-${tabName} input, #edit-form-${tabName} textarea, #edit-form-${tabName} select`).forEach(el => {
+                el.value = '';
+            });
+        }
+
+        function addRecord(sheetName, fields, tabName) {
+            // Note: This is a placeholder. In production, you'd need a backend to write to Google Sheets
+            // For now, show instructions
+            const values = fields.map(f => document.getElementById(f)?.value || '').join(' | ');
+            showAlert('✅ To save this data, please manually add it to your Google Sheet:\n\n' + values, 'success');
+            hideAddForm(tabName);
+            
+            // Reload data
+            setTimeout(() => loadTabData(tabName), 1000);
+        }
+
+        function deleteRecord(sheetName, index) {
+            if (confirm('Are you sure you want to delete this record? You\'ll need to remove it manually from your Google Sheet.')) {
+                showAlert('Please remove row ' + (index + 2) + ' from your Google Sheet and refresh the page', 'info');
+            }
+        }
+
+        function showAlert(message, type = 'info') {
+            const alert = document.getElementById('alert');
+            alert.textContent = message;
+            alert.className = 'alert show alert-' + type;
+            setTimeout(() => {
+                alert.classList.remove('show');
+            }, 5000);
+        }
+
+        function openSettings() {
+            document.getElementById('setup-modal').classList.add('active');
+        }
+
+        function closeSettings() {
+            document.getElementById('setup-modal').classList.remove('active');
+        }
+
+        function saveSettings() {
+            const sheetId = document.getElementById('sheet-id').value;
+            if (!sheetId) {
+                showAlert('Please enter your Google Sheet ID', 'error');
+                return;
             }
 
-            // Initial load
+            const sheetUrl = `https://docs.google.com/spreadsheets/d/e/${sheetId}/pub?output=csv`;
+            CONFIG.sheetUrl = sheetUrl;
+            window.SITE_SHEET_URL = sheetUrl;
+            localStorage.setItem('SITE_SHEET_URL', sheetUrl);
+            
+            showAlert('✅ Settings saved successfully!', 'success');
+            setTimeout(() => closeSettings(), 1500);
+        }
+
+        async function testConnection() {
+            const sheetId = document.getElementById('sheet-id').value;
+            if (!sheetId) {
+                showAlert('Please enter your Google Sheet ID first', 'error');
+                return;
+            }
+
+            const sheetUrl = `https://docs.google.com/spreadsheets/d/e/${sheetId}/pub?output=csv`;
+            try {
+                const res = await fetch(sheetUrl);
+                if (res.ok) {
+                    showAlert('✅ Connection successful! Your sheet is accessible.', 'success');
+                } else {
+                    showAlert('❌ Connection failed. Make sure your sheet is published as CSV.', 'error');
+                }
+            } catch(err) {
+                showAlert('❌ Connection error. Check your sheet ID and make sure it\'s published.', 'error');
+            }
+        }
+
+        // Event listeners
+        document.getElementById('settings-btn').addEventListener('click', openSettings);
+        document.getElementById('lang-toggle').addEventListener('click', () => {
+            CURRENT_LANG = CURRENT_LANG === 'en' ? 'hi' : 'en';
+            localStorage.setItem('admin_lang', CURRENT_LANG);
             loadDashboard();
-        })();
+        });
+
+        // Tab switching
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => switchTab(btn.getAttribute('data-tab')));
+        });
+
+        // Check if settings configured on load
+        window.addEventListener('load', () => {
+            if (!CONFIG.sheetUrl) {
+                showAlert('⚠️ Please configure your Google Sheet in Settings', 'info');
+                setTimeout(openSettings, 1000);
+            } else {
+                loadDashboard();
+            }
+        });
     </script>
 </body>
 </html>
